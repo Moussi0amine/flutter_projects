@@ -96,14 +96,14 @@ class _CounterPageState extends State<CounterPage> {
             const SizedBox(height: 8),
 
             // Display the counter value in large text
-            Text(
-              '$_counter', // Dart string interpolation: '$' inserts the variable value
-              style: TextStyle(
-                fontSize: 60,
-                fontWeight: FontWeight.bold,
-                color: _counter.isEven ? Colors.green : Colors.red,
-              )
-            ),
+            Container(
+               padding: const EdgeInsets.all(12),
+               color: Colors.black12,
+               child: Text(
+               '$_counter',
+               style: TextStyle(fontSize: 60, color: Colors.blueAccent),
+                ),
+              ),
 
             // Another small space between widgets
             const SizedBox(height: 16),
