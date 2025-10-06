@@ -98,7 +98,11 @@ class _CounterPageState extends State<CounterPage> {
             // Display the counter value in large text
             Text(
               '$_counter', // Dart string interpolation: '$' inserts the variable value
-              style: textTheme.displayMedium ?? textTheme.headlineMedium,
+              style: TextStyle(
+                fontSize: 60,
+                fontWeight: FontWeight.bold,
+                color: _counter.isEven ? Colors.green : Colors.red,
+              )
             ),
 
             // Another small space between widgets
