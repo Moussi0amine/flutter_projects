@@ -96,14 +96,18 @@ class _CounterPageState extends State<CounterPage> {
             const SizedBox(height: 8),
 
             // Display the counter value in large text
-            Container(
-               padding: const EdgeInsets.all(12),
-               color: Colors.black12,
-               child: Text(
-               '$_counter',
-               style: TextStyle(fontSize: 60, color: Colors.blueAccent),
-                ),
-              ),
+            Row(
+  mainAxisSize: MainAxisSize.min,
+  children: [
+    const Icon(Icons.favorite, color: Colors.pink),
+    const SizedBox(width: 8),
+    Text(
+      '$_counter',
+      style: textTheme.displayMedium,
+    ),
+  ],
+),
+
 
             // Another small space between widgets
             const SizedBox(height: 16),
