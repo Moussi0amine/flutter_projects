@@ -1,16 +1,46 @@
-# counter_app
+🧮 Counter App
 
-A new Flutter project.
+A simple Flutter app that increments, decrements, and resets a counter.
+It’s the first project in my Flutter learning journey — focused on mastering the basics of widgets, layout, and state management.
 
-## Getting Started
+🚀 Run the App
+flutter pub get
+flutter run
 
-This project is a starting point for a Flutter application.
+🧩 Widgets Used
+Widget	Purpose
+MaterialApp	Root of the app, sets theme and routes
+Scaffold	Provides structure (AppBar, Body, FAB)
+AppBar	Displays the app title
+Text	Shows labels and counter value
+Column / Row	Layout widgets for positioning
+ElevatedButton	Trigger increment/decrement/reset
+FloatingActionButton	Quick access to increment
+StatefulWidget / setState()	Manages and updates counter state
+✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+Increase, decrease, or reset the counter
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Prevents negative values
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Dynamic text styling
+
+Uses Material 3 design
+
+📚 What I Learned
+
+The structure of a Flutter project
+
+Difference between StatelessWidget and StatefulWidget
+
+How setState() rebuilds the UI
+
+Basic widget layout and styling
+
+🪄 Next Ideas
+
+Add a SnackBar when reaching a certain value
+
+Save counter with shared_preferences
+
+Add a dark mode switch
