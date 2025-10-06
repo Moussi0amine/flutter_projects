@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       // The theme defines global styling (colors, typography, etc.)
       theme: ThemeData(
         useMaterial3: true,            // Use the latest Material 3 design
-        colorSchemeSeed: Colors.blue,  // Use blue as the base color
+        colorSchemeSeed: Colors.red,  // Use blue as the base color
       ),
 
       // The home screen of our app (the first screen to show)
@@ -74,7 +74,10 @@ class _CounterPageState extends State<CounterPage> {
     return Scaffold(
       // AppBar: the top bar of the app
       appBar: AppBar(
-        title: const Text('Counter App'),
+        backgroundColor: Colors.deepOrange,
+        title: const Text('🔥 My First Flutter App',
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        ),
         centerTitle: true, // Center the title in the middle of the bar
       ),
 
