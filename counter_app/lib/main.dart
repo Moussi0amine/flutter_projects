@@ -1,157 +1,226 @@
-// Import the Flutter material package.
-// This gives access to all Material Design widgets like Scaffold, AppBar, etc.
+// 🧮 Counter App - Flutter Learning Project
+// ----------------------------------------------------
+// This simple app teaches you the basics of Flutter:
+// - StatefulWidget vs StatelessWidget
+// - setState() for updating UI
+// - Using Scaffold, AppBar, Buttons, Text, and Layout widgets
+// ----------------------------------------------------
+
 import 'package:flutter/material.dart';
 
-// The main() function is the entry point of every Dart/Flutter app.
-// runApp() takes a widget and makes it the root of the widget tree.
-void main() => runApp(const MyApp());
+// The entry point of the Flutter app.
+// runApp() inflates the widget tree starting from CounterApp().
+void main() => runApp(const CounterApp());
 
-// MyApp is a StatelessWidget because it does not store or change any data itself.
-// It just sets up the global structure and theme of the app.
-class MyApp extends StatelessWidget {
-  // A 'const' constructor means this widget will never change.
-  const MyApp({super.key});
+// CounterApp is a StatelessWidget because it never changes by itself.
+// It defines the app theme, title, and the home screen (CounterPage).
+class CounterApp extends StatelessWidget {
+  const CounterApp({super.key});
 
-  // The build() method describes how to display this widget.
-  // It returns another widget (here, a MaterialApp).
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // App title, shown in task switchers and logs.
       title: 'Counter App',
+      debugShowCheckedModeBanner: false, // Hide the debug banner
 
-      // The theme defines global styling (colors, typography, etc.)
+      // Theme configuration (Material 3 + base color)
       theme: ThemeData(
-        useMaterial3: true,            // Use the latest Material 3 design
-        colorSchemeSeed: Colors.red,  // Use blue as the base color
+        useMaterial3: true,
+        colorSchemeSeed: Colors.blue,
       ),
 
-      // The home screen of our app (the first screen to show)
+      // The first page of the app
       home: const CounterPage(),
     );
   }
 }
 
-// CounterPage is a StatefulWidget because it contains data that can change (the counter value).
+// CounterPage is a StatefulWidget because it holds mutable data (the counter value).
 class CounterPage extends StatefulWidget {
   const CounterPage({super.key});
 
-  // createState() creates an instance of the state class (_CounterPageState)
-  // where the mutable data and UI logic will live.
   @override
   State<CounterPage> createState() => _CounterPageState();
 }
 
-// The underscore (_) before the class name makes it private to this file.
+// The State class holds data and UI logic for the CounterPage.
 class _CounterPageState extends State<CounterPage> {
-  // This is the variable that holds the current counter value.
-  // Because it changes, it must live inside the State class, not the Widget class.
+  // The integer value of the counter.
   int _counter = 0;
 
-  // This function increments the counter by 1.
-  // setState() tells Flutter that something changed, and the UI needs to rebuild.
-  void _increment() => setState(() => _counter++);
+  // Increment function
+  void _increment() {
+    setState(() => _counter++); // Update counter and rebuild UI
 
-  // This function decrements the counter, but never below 0.
-  void _decrement() {
-    setState(() {
-      if (_counter > 0) _counter--;
-    });
+    // When counter reaches 10, show a small feedback message
+    if (_counter == 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('🎉 You reached 10!')),
+      );
+    }
   }
 
-  // This function resets the counter to zero.
-  void _reset() => setState(() => _counter = 0);
+  // Decrement function with lower limit = 0
+  void _decrement() {
+    if (_counter > 0) {
+      setState(() => _counter--);
+    } else {
+      // Show message if user tries to go below 0
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Counter can't go below zero 🚫")),
+      );
+    }
+  }
 
-  // The build() method describes how to display the widget on screen.
-  // It runs every time setState() is called.
+  // Reset function to return counter to zero
+  void _reset() {
+    setState(() => _counter = 0);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Get the app's text theme to use consistent text styles.
+    // Access the current app theme to style text consistently
     final textTheme = Theme.of(context).textTheme;
 
-    // Scaffold gives a basic material layout structure:
-    // it provides an AppBar, body, and optional FloatingActionButton.
+    // Scaffold provides the main app structure (AppBar, Body, FAB)
     return Scaffold(
-      // AppBar: the top bar of the app
       appBar: AppBar(
-        backgroundColor: Colors.deepOrange,
-        title: const Text('🔥 My First Flutter App',
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
+        backgroundColor: Colors.blue,
+        title: const Text(
+          '🧮 Counter App',
+          style: TextStyle(color: Colors.white),
         ),
-        centerTitle: true, // Center the title in the middle of the bar
+        centerTitle: true, // Center the title in the AppBar
       ),
 
-      // Body: the main content area
-      body: Center(
-        // Center widget centers its child in the available space.
-        child: Column(
-          // Column arranges its children vertically.
-          // mainAxisSize.min means it takes only as much height as needed.
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // A simple label text
-            const Text('You have pushed the button this many times:'),
+      // The main body of the page
+      body: Container(
+        // Apply a gradient background using BoxDecoration
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.white, Color(0xFFD8EFFF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
 
-            // Add some vertical spacing (8 logical pixels)
-            const SizedBox(height: 8),
-
-            // Display the counter value in large text
-            Row(
-  mainAxisSize: MainAxisSize.min,
-  children: [
-    const Icon(Icons.favorite, color: Colors.pink),
-    const SizedBox(width: 8),
-    Text(
-      '$_counter',
-      style: textTheme.displayMedium,
-    ),
-  ],
-),
-
-
-            // Another small space between widgets
-            const SizedBox(height: 16),
-
-            // A row to place multiple buttons horizontally
-            Row(
-              mainAxisSize: MainAxisSize.min,
+        // Center the content vertically and horizontally
+        child: Center(
+          // Add padding around the content for spacing
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Wrap content vertically
               children: [
-                // Decrement button
-                ElevatedButton.icon(
-                  onPressed: _decrement,            // Action when pressed
-                  icon: const Icon(Icons.remove),   // Icon inside the button
-                  label: const Text('Decrement'),   // Button text
+                // Label text above the counter
+                const Text(
+                  'You have pushed the button this many times:',
+                  style: TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
                 ),
 
-                // Add some space between buttons
-                const SizedBox(width: 10),
+                const SizedBox(height: 12), // Vertical space
 
-                // Reset button
-                ElevatedButton.icon(
-                  onPressed: _reset,
-                  icon: const Icon(Icons.refresh),
-                  label: const Text('Reset'),
+                // Display the counter value in a styled box
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 5,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+
+                  // Counter row (icon + number)
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Change the icon depending on whether counter is even or odd
+                      Icon(
+                        _counter.isEven
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color:
+                            _counter.isEven ? Colors.redAccent : Colors.grey,
+                      ),
+                      const SizedBox(width: 10),
+
+                      // Display the counter number with dynamic color
+                      Text(
+                        '$_counter',
+                        style: textTheme.displayMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: _counter.isEven
+                              ? Colors.blueAccent
+                              : Colors.deepOrange,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
-                const SizedBox(width: 10),
+                const SizedBox(height: 24),
 
-                // Increment button
-                ElevatedButton.icon(
-                  onPressed: _increment,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Increment'),
+                // --- Action Buttons Section ---
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Increment Button
+                    ElevatedButton.icon(
+                      onPressed: _increment,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Increment'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green.shade600,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(160, 45),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Decrement Button
+                    ElevatedButton.icon(
+                      onPressed: _decrement,
+                      icon: const Icon(Icons.remove),
+                      label: const Text('Decrement'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange.shade700,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(160, 45),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Reset Button
+                    ElevatedButton.icon(
+                      onPressed: _reset,
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Reset'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue.shade600,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(160, 45),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
 
-      // FloatingActionButton: a circular button floating over the content.
+      // FloatingActionButton (FAB) for quick increment
       floatingActionButton: FloatingActionButton(
-        onPressed: _increment,              // Increase counter when pressed
-        tooltip: 'Increment',               // Tooltip on long-press
-        child: const Icon(Icons.add),       // The + icon
+        onPressed: _increment,
+        tooltip: 'Increment', // Tooltip text when long-pressed
+        backgroundColor: Colors.blueAccent,
+        child: const Icon(Icons.add),
       ),
     );
   }
