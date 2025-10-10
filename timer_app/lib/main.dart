@@ -1,122 +1,162 @@
+// Importing the Dart async library for Timer functionality
+import 'dart:async';
+
+// importing Flutter's Material package for UI widgets and themes
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+// The main() function is the entry point of every Flutter app
+void main() => runApp(const StopwatchApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+/// 🧱  Root widget of the entire application.
+/// This is a StatelessWidget because it doesn't need to store any changing data.
+class StopwatchApp extends StatelessWidget {
+  const StopwatchApp({
+    super.key,
+  }); // Constructor with optional key (good practice)
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext Context) {
+    // The build() method describes what the UI looks like
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner:
+          false, // Removes the debug banner in top-right corner
+      title: 'Stopwatch App', // App title (used by os/task manager)
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+        primarySwatch: Colors.deepPurple,
+      ), // App-wide theme color
+      home: const StopwatchScreen(), // Sets the home screen widget
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+/// 🕒 Main screen widget for the stopwatch.
+/// It's Stateful because the time display updates dynamically.
+class StopwatchScreen extends StatefulWidget {
+  const StopwatchScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<StopwatchScreen> createState() => _StopwatchScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+/// The private State class where we hold variables and logic.
+class _StopwatchScreenState extends State<StopwatchScreen> {
+  // 🧮 Variable to track the total number of seconds elapsed
+  int _seconds = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+  // ⏲️ Timer object from dart:async that ticks every second
+  Timer? _timer;
+
+  // 🚦 Boolean flag to know if the timer is currently running
+  bool _isRunning = false;
+
+  /// ▶️ Starts the timer if it's not already running
+  void _startTimer() {
+    if (_isRunning) return; // If timer is already running, do nothing
+
+    _isRunning = true; // Mark timer as running
+
+    // Create a periodic timer that runs every second
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      // setState() tells Flutter: "Something changed, rebuild the UI"
+      setState(() {
+        _seconds++; // Increase total seconds by 1 every tick
+      });
     });
   }
 
+  /// ⏸️ Stops (pauses) the timer
+  void _stopTimer() {
+    _timer?.cancel(); // Safely cancel the timer if it exists
+    _isRunning = false; // Update running state
+  }
+
+  /// 🔄 Resets the timer to 0 and stops it
+  void _resetTimer() {
+    _stopTimer(); // Stop the timer first
+    setState(() {
+      _seconds = 0; // Reset elapsed time to zero
+    });
+  }
+
+  /// 🧮 Helper function to format seconds into mm:ss (e.g, 02:45)
+  String _formatTime(int seconds) {
+    final minutes = (seconds ~/ 60).toString().padLeft(
+      2,
+      '0',
+    ); // Divide by 60 to get minutes, pad with loading 0
+    final secs = (seconds % 60).toString().padLeft(
+      2,
+      '0',
+    ); // Get remaining seconds
+    return '$minutes:$secs'; // Combine into a formatted string
+  }
+
+  /// 🚪 This method runs when the widget is romoved from the screen.
+  /// We use it to cancel the timer to  avoid memory leaks.
+  @override
+  void dispose() {
+    _timer?.cancel(); // Cancel active timer if it exists
+    super.dispose(); // Always call the parent dispose() method
+  }
+
+  /// 🎨 The build() method descirbes the UI every time it updates.
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
+        title: const Text('⏱ Stopwatch'),
+      ), // Top app bar with title
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Center all elements vertically
+          children: [
+            // 🕒 Text widget to display the current time
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              _formatTime(_seconds), // Call our formatter function
+              style: const TextStyle(
+                fontSize: 64, // Large text for visibility
+                fontWeight: FontWeight.bold, // Bold style
+                color: Colors.deepPurple, // Matches theme
+              ),
+            ),
+
+            const SizedBox(height: 40), // Add space below the timer text
+            // 🔘 Buttons arranged horiznetally
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center, // Center the buttons
+              children: [
+                // ▶️ Start Button
+                ElevatedButton.icon(
+                  onPressed: _isRunning
+                      ? null
+                      : _startTimer, // Disabled if already running
+                  icon: const Icon(Icons.play_arrow),
+                  label: const Text('Start'),
+                ),
+
+                const SizedBox(width: 20), // Small gap between buttons
+                // ⏸️ Stop Button
+                ElevatedButton.icon(
+                  onPressed: _isRunning
+                      ? _stopTimer
+                      : null, // Disabled if not running
+                  icon: const Icon(Icons.pause),
+                  label: const Text('Stop'),
+                ),
+
+                const SizedBox(width: 20), // Another small gap
+                // 🔄 Reset Button
+                ElevatedButton.icon(
+                  onPressed: _resetTimer, // Always available
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Stop'),
+                ),
+              ],
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
