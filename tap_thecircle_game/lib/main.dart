@@ -1,122 +1,200 @@
+import 'dart:async'; // For Timer
+import 'dart:math';  // For random positions
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const TapTheCircleApp());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+/// 🎮 Root widget
+class TapTheCircleApp extends StatelessWidget {
+  const TapTheCircleApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Tap The Circle',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      home: const TapGameScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+/// 🕹️ Main Game Screen
+class TapGameScreen extends StatefulWidget {
+  const TapGameScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<TapGameScreen> createState() => _TapGameScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _TapGameScreenState extends State<TapGameScreen> {
+  // 🎯 Circle position (randomly updated)
+  double _x = 100;
+  double _y = 300;
 
-  void _incrementCounter() {
+  // 🧮 Player score
+  int _score = 0;
+
+  // ⏱️ Game time remaining (seconds)
+  int _timeLeft = 10;
+
+  // Timer references
+  Timer? _circleTimer;
+  Timer? _gameTimer;
+
+  // 🚦 Whether game started
+  bool _isPlaying = false;
+
+  final Random _random = Random();
+
+  /// Start the game
+  void _startGame() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _score = 0;
+      _timeLeft = 10;
+      _isPlaying = true;
     });
+
+    // Timer to move the circle every 1 second
+    _circleTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _moveCircle();
+    });
+
+    // Countdown timer
+    _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        _timeLeft--;
+      });
+
+      // Stop game when time reaches 0
+      if (_timeLeft <= 0) {
+        _endGame();
+      }
+    });
+  }
+
+  /// Move the circle to a new random position
+  void _moveCircle() {
+    setState(() {
+      _x = _random.nextDouble() * 300 + 20; // random X
+      _y = _random.nextDouble() * 500 + 80; // random Y
+    });
+  }
+
+  /// Handle tapping the circle
+  void _tapCircle() {
+    if (!_isPlaying) return;
+    setState(() {
+      _score++;
+    });
+    _moveCircle(); // Move immediately after tap
+  }
+
+  /// End the game and stop timers
+  void _endGame() {
+    _circleTimer?.cancel();
+    _gameTimer?.cancel();
+    setState(() {
+      _isPlaying = false;
+    });
+
+    // Show score dialog
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Game Over 🎯'),
+        content: Text('Your score: $_score'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('OK'),
+          )
+        ],
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _circleTimer?.cancel();
+    _gameTimer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Tap The Circle Game'),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+      body: Stack(
+        children: [
+          // Background
+          Positioned.fill(
+            child: Container(color: Colors.deepPurple.shade50),
+          ),
+
+          // Display score and time
+          Positioned(
+            top: 20,
+            left: 20,
+            child: Text(
+              'Score: $_score',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            top: 20,
+            right: 20,
+            child: Text(
+              'Time: $_timeLeft',
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+
+          // 🎯 Circle (only visible when playing)
+          if (_isPlaying)
+            Positioned(
+              left: _x,
+              top: _y,
+              child: GestureDetector(
+                onTap: _tapCircle,
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: const BoxDecoration(
+                    color: Colors.deepPurple,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          // 🟢 Start button (only visible when not playing)
+          if (!_isPlaying)
+            Center(
+              child: ElevatedButton(
+                onPressed: _startGame,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+                ),
+                child: const Text(
+                  'START GAME',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
