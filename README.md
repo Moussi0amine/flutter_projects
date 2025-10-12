@@ -1,93 +1,63 @@
-🧠 Flutter Learning Projects
+# 🧠 Flutter Learning Projects
 
 Welcome to my Flutter Learning Journey — a collection of small, well-documented projects built to learn Flutter step by step.
-Each project focuses on a few core widgets or concepts, helping me (and you) understand Flutter from the ground up.
+Each project focuses on core widgets or concepts, helping you (and me) understand Flutter from the ground up.
 
-📘 Projects List
-#	Project	Focus	Status
-1	🧮 Counter App
-	StatefulWidget, setState(), Scaffold, ElevatedButton, Text, Column	✅ Done
-2	🎲 Dice Roller App
-	Image, Random, GestureDetector, setState()	🔄 In progress
-3	🪪 Profile Card
-	Card, ListTile, CircleAvatar, Row, Column, Icon	⏳ Upcoming
-🧮 Counter App
+---
 
-A simple Flutter app that increments and decrements a counter — your first step into understanding state management, UI layout, and hot reload.
+## 📘 Project List
 
-🏗️ Built With
+| Project Name   | Folder | Description | Status |
+| -------------- | ------ | ----------- | ------ |
+| **Counter App** | [counter_app/](counter_app/) | Basic state management with increment/decrement counter. | ✅ Done |
+| **Dice Roller App** | [dice_roller_app/](dice_roller_app/) | Tap to roll dice using random images and gestures. | 🔄 In progress |
+| **Profile Card** | [profile_card/](profile_card/) | Profile card UI with photo, info, and layout widgets. | ⏳ Upcoming |
+| **Calculator** | [calculator/](calculator/) | Simple calculator with basic math operations. | 🚧 In progress |
+| **Quiz App** | [quiz_app/](quiz_app/) | Multi-question quiz with scoring and navigation. | 🚧 In progress |
+| **To-Do App** | [todo_app/](todo_app/) | Add/remove/mark tasks as done. | 🚧 In progress |
+| **Timer App** | [timer_app/](timer_app/) | Start/stop a timer with live display. | 🚧 In progress |
+| **Notes App** | [notes_app/](notes_app/) | Create and manage local notes. | 🚧 In progress |
 
-Flutter SDK
+> Folders correspond to each project. Some projects may be in progress or planned.
 
-Dart
+---
 
-Material Design Widgets
+## 🚀 How to Run a Project
 
-✨ Features
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/Moussi0amine/flutter_projects.git
+    cd flutter_projects/<project-folder>
+    ```
+2. Get dependencies:
+    ```sh
+    flutter pub get
+    ```
+3. Run the app:
+    ```sh
+    flutter run
+    ```
 
-Increment, decrement, and reset counter buttons
+---
 
-Dynamic color change depending on the counter value
+## 🛠️ Built With
 
-Floating action button for quick increment
+- Flutter SDK
+- Dart
+- Material Design Widgets
 
-Responsive layout using Column and Row
+---
 
-Built with StatefulWidget and setState()
+## 🪄 Next Steps
 
-🧩 Widgets Learned
-Widget	Purpose
-MaterialApp	Root of the Flutter app
-Scaffold	Basic visual structure (app bar, body, FAB)
-AppBar	Header bar with title
-Column / Row	Layout widgets for arranging UI elements
-Text	Displays numbers and labels
-ElevatedButton	Triggers actions
-FloatingActionButton	Prominent circular action button
-StatefulWidget + setState()	For updating and rebuilding UI dynamically
-🚀 How to Run
-# 1. Clone the repository
-git clone https://github.com/<your-username>/flutter-learning-projects.git
-cd flutter-learning-projects/counter_app
+- Add more projects (animations, theming, persistence, etc.)
+- Refactor and improve existing apps
+- Add screenshots and GIFs
 
-# 2. Get dependencies
-flutter pub get
+---
 
-# 3. Run the app
-flutter run
+## 📚 Resources
 
-🧠 What I Learned
-
-How Flutter apps are structured (main.dart, widgets tree)
-
-The difference between StatelessWidget and StatefulWidget
-
-How setState() rebuilds the UI
-
-How to use Material widgets like Scaffold, AppBar, and Text
-
-How to style and align widgets using Column, Row, and Padding
-
-📸 Preview (optional)
-
-Add a screenshot or GIF later:
-
-![Counter App Screenshot](preview.png)
-
-🪄 Next Steps
-
-Add animations when incrementing the counter
-
-Save counter value using shared_preferences
-
-Add dark/light theme toggle
-
-📚 Resources
-
-Flutter Docs – Get started
-
-Widget Catalog
-
-Material Design Widgets
-
-setState() explanation
+- [Flutter Docs](https://docs.flutter.dev/)
+- [Widget Catalog](https://docs.flutter.dev/development/ui/widgets)
+- [Material Design Widgets](https://api.flutter.dev/flutter/material/material-library.html)
