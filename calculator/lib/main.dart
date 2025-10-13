@@ -59,15 +59,15 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     });
   }
 
-  /// Simple math evaluator for + - × ÷
+  /// Improved math evaluator for + - × ÷ with operator precedence
   void _calculateResult() {
     String expression = _input;
     expression = expression.replaceAll('×', '*');
     expression = expression.replaceAll('÷', '/');
     expression = expression.replaceAll('−', '-');
+    expression = expression.replaceAll('%', '/100');
 
     try {
-      // ⚠️ Simple calculation using Dart's expression evaluator
       final result = _evaluateExpression(expression);
       _output = result.toString();
     } catch (e) {
@@ -75,25 +75,56 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
     }
   }
 
-  /// Evaluate mathematical string (simple manual logic)
+  /// Shunting-yard algorithm for operator precedence (no parentheses)
   double _evaluateExpression(String exp) {
-    // For simplicity, split by operator and handle basic operations
-    try {
-      // This is NOT a full parser, just enough for simple operations
-      final parsed = exp.split(RegExp(r'([\+\-\*/])'));
-      double result = double.parse(parsed[0]);
-      for (int i = 1; i < parsed.length; i += 2) {
-        String op = parsed[i];
-        double num = double.parse(parsed[i + 1]);
-        if (op == '+') result += num;
-        if (op == '-') result -= num;
-        if (op == '*') result *= num;
-        if (op == '/') result /= num;
+    final ops = <String>[];
+    final vals = <double>[];
+    int i = 0;
+    while (i < exp.length) {
+      if (exp[i] == ' ') {
+        i++;
+        continue;
       }
-      return result;
-    } catch (e) {
-      return 0;
+      if (_isDigit(exp[i]) || exp[i] == '.') {
+        int start = i;
+        while (i < exp.length && (_isDigit(exp[i]) || exp[i] == '.')) i++;
+        vals.add(double.parse(exp.substring(start, i)));
+        continue;
+      }
+      if (_isOperator(exp[i])) {
+        while (ops.isNotEmpty && _precedence(ops.last) >= _precedence(exp[i])) {
+          _applyOperator(ops, vals);
+        }
+        ops.add(exp[i]);
+        i++;
+        continue;
+      }
+      throw Exception('Invalid character: ${exp[i]}');
     }
+    while (ops.isNotEmpty) {
+      _applyOperator(ops, vals);
+    }
+    return vals.isNotEmpty ? vals.first : 0;
+  }
+
+  bool _isDigit(String ch) => ch.codeUnitAt(0) >= 48 && ch.codeUnitAt(0) <= 57;
+  bool _isOperator(String ch) => ch == '+' || ch == '-' || ch == '*' || ch == '/';
+
+  int _precedence(String op) {
+    if (op == '+' || op == '-') return 1;
+    if (op == '*' || op == '/') return 2;
+    return 0;
+  }
+
+  void _applyOperator(List<String> ops, List<double> vals) {
+    if (vals.length < 2 || ops.isEmpty) throw Exception('Invalid expression');
+    double b = vals.removeLast();
+    double a = vals.removeLast();
+    String op = ops.removeLast();
+    if (op == '+') vals.add(a + b);
+    if (op == '-') vals.add(a - b);
+    if (op == '*') vals.add(a * b);
+    if (op == '/') vals.add(a / b);
   }
 
   @override
@@ -112,72 +143,45 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                 children: [
                   Text(
                     _input,
-                    style: const TextStyle(
-                      fontSize: 32,
-                      color: Colors.white70,
-                    ),
+                    style: const TextStyle(fontSize: 32, color: Colors.white70),
                   ),
                   const SizedBox(height: 10),
                   Text(
                     _output,
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: const TextStyle(fontSize: 48, color: Colors.white),
                   ),
                 ],
               ),
             ),
-
-            const Divider(color: Colors.white24, thickness: 1),
-
-            // 🔘 Buttons Grid
+            // 🔢 Calculator Buttons
             Expanded(
-              flex: 2,
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
                 child: GridView.builder(
                   itemCount: _buttons.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, // 4 buttons per row
-                    mainAxisSpacing: 12,
+                    crossAxisCount: 4,
+                    childAspectRatio: 1.2,
                     crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
                   ),
                   itemBuilder: (context, index) {
                     final btn = _buttons[index];
-                    final isOperator = ['÷', '×', '−', '+', '='].contains(btn);
-                    final isSpecial = ['C', '⌫', '%'].contains(btn);
-
-                    return GestureDetector(
-                      onTap: () => _onButtonTap(btn),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: isOperator
-                              ? Colors.deepPurpleAccent
-                              : isSpecial
-                                  ? Colors.grey.shade800
-                                  : Colors.grey.shade900,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 6,
-                              offset: const Offset(2, 2),
-                            ),
-                          ],
+                    return ElevatedButton(
+                      onPressed: () => _onButtonTap(btn),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _getBtnColor(btn),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        child: Center(
-                          child: Text(
-                            btn,
-                            style: TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.bold,
-                              color: isOperator
-                                  ? Colors.white
-                                  : Colors.white70,
-                            ),
-                          ),
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: Text(
+                        btn,
+                        style: TextStyle(
+                          fontSize: btn == '=' ? 32 : 26,
+                          fontWeight: btn == '=' ? FontWeight.bold : FontWeight.normal,
+                          color: btn == 'C' ? Colors.redAccent : Colors.white,
                         ),
                       ),
                     );
@@ -189,5 +193,13 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         ),
       ),
     );
+  }
+
+  Color _getBtnColor(String btn) {
+    if (btn == 'C') return Colors.red.shade800;
+    if (btn == '=' || btn == '+' || btn == '−' || btn == '×' || btn == '÷' || btn == '%') {
+      return Colors.deepPurple;
+    }
+    return Colors.grey.shade900;
   }
 }
